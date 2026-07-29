@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplikasi Cek Barcode</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="app">
+
+    <header class="topbar">
+        <div>
+            <h2>Barcode Scanner</h2>
+            <small>Cek data produk</small>
+        </div>
+
+        <button id="cameraBtn" class="camera-btn">
+            ⚙️
+        </button>
+    </header>
+
+    <div class="search-box">
+        <input
+            id="barcodeInput"
+            type="text"
+            placeholder="Masukkan barcode..."
+        >
+        <button id="fetchData" type="button" class="search-btn">
+            <span class="search-icon">🔍</span>
+            <span>Cari</span>
+        </button>
+    </div>
+
+    <div class="card">
+
+        <h3>Informasi Produk</h3>
+
+        <div class="image-wrap">
+            <img id="productImage" class="product-image" src="" alt="Gambar Produk" style="display:none" />
+        </div>
+
+        <div class="item">
+            <span>Barcode</span>
+            <strong id="txtBarcode">-</strong>
+        </div>
+
+        <div class="item">
+            <span>Nama Produk</span>
+            <strong id="txtNama">-</strong>
+        </div>
+
+        <div class="item">
+            <span>Supplier</span>
+            <strong id="txtSupplier">-</strong>
+        </div>
+
+        <div class="item">
+            <span>Kategori</span>
+            <strong id="txtKategori">-</strong>
+        </div>
+
+        <div class="item">
+            <span>Harga</span>
+            <strong id="txtHarga">-</strong>
+        </div>
+
+    </div>
+
+</div>
+
+<nav class="bottom-nav">
+    <button id="navCamera" class="nav-item">
+        <span>📷</span>
+        <strong>Kamera</strong>
+    </button>
+    <button id="navHome" class="nav-item active">
+        <span>🏠</span>
+        <strong>Beranda</strong>
+    </button>
+    <button id="navAdd" class="nav-item">
+        <span>➕</span>
+        <strong>Tambah</strong>
+    </button>
+</nav>
+
+<div id="addProductModal" class="modal">
+    <div class="popup-card">
+        <button id="closeAddModal" class="close">✕</button>
+        <h2>Tambah Produk Baru</h2>
+        <form id="addProductForm">
+            <label for="newBarcode">Barcode</label>
+            <input id="newBarcode" type="text" placeholder="Masukkan barcode" required />
+            <label for="newName">Nama Produk</label>
+            <input id="newName" type="text" placeholder="Masukkan nama produk" required />
+            <label for="newSupplier">Supplier</label>
+            <input id="newSupplier" type="text" placeholder="Masukkan nama supplier" required />
+            <label for="newStock">Qty Stok</label>
+            <input id="newStock" type="number" min="0" placeholder="Masukkan qty stok" required />
+            <label for="newImage">URL Gambar (opsional)</label>
+            <input id="newImage" type="text" placeholder="Masukkan URL gambar produk (opsional)" />
+            <button type="submit" class="submit-btn">Simpan Produk</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Scanner -->
+
+<div id="scannerModal" class="modal">
+
+    <div class="scanner-box">
+
+        <button id="closeScanner" class="close">
+            ✕
+        </button>
+
+        <video id="video" autoplay playsinline></video>
+
+        <div class="scanner-line"></div>
+
+        <p id="scanStatus">Arahkan barcode ke dalam kotak</p>
+
+    </div>
+
+</div>
+
+
+<!-- Popup Hasil -->
+
+<div id="resultModal" class="modal">
+
+    <div class="popup">
+
+        <div class="success">
+
+            ✔
+
+        </div>
+
+        <h2>Barcode Ditemukan</h2>
+
+        <div id="singleResult">
+            <h3 id="popupBarcode"></h3>
+
+            <p id="popupNama"></p>
+
+            <small id="popupSupplier"></small><br>
+
+            <small>Kategori: <strong id="popupKategori">-</strong></small><br>
+            <small>Harga: <strong id="popupHarga">-</strong></small>
+
+            <div class="popup-image-wrap">
+                <img id="popupImage" class="popup-image" src="" alt="Gambar Produk" style="display:none" />
+            </div>
+
+            <button id="closePopup" type="button" class="ok-btn">
+                OK
+            </button>
+        </div>
+
+        <div id="multiResults" style="display:none">
+            <p>Pilih salah satu produk yang sesuai:</p>
+            <div id="multiList"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal">
+    <div class="popup-card">
+        <button id="closeSettings" class="close">✕</button>
+        <h2>Pengaturan</h2>
+
+        <div>
+            <strong>Versi:</strong> <span id="appVersion">1.0.0</span>
+        </div>
+
+        <hr />
+
+        <h3>Tampilan</h3>
+        <label class="theme-switch">
+            <span>Mode Gelap</span>
+            <input id="themeToggle" type="checkbox" />
+            <span class="slider"></span>
+        </label>
+
+        <hr />
+
+        <h3>Jabatan</h3><p style="color: #cbcbcb;">Admin Returan</p>
+
+        <h3 style="margin-top:12px">Divisi </h3><p style="color: #cbcbcb;">Receiving Good</p>
+
+
+        <div style="margin-top:12px">
+            <button id="saveSettingsBtn" class="submit-btn">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Dark theme */
+.dark { color-scheme: dark; background: radial-gradient(circle at top left, #071023 0%, #04101a 35%, #000814 100%); color: #e6eef8; }
+.dark .card, .dark .popup-card, .dark .popup { background: #071023; color: #e6eef8; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+.dark .product-image, .dark .popup-image { background: #081426; }
+.dark .search-box input, .dark .popup-card input, .dark .mode-select { background: #081426; color: #e6eef8; border: 1px solid #223040; }
+.dark .bottom-nav { background: rgba(2,6,23,0.9); color: #e6eef8; }
+.dark .nav-item, .dark .submit-btn { color: #e6eef8; }
+.dark .modal { background: rgba(0,0,0,0.8); }
+.close { background: #fff; }
+.dark .close { background: #22313b; color: #e6eef8; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
