@@ -1,219 +1,278 @@
-<!DOCTYPE html>
+
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aplikasi Cek Barcode</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gacor King - Web App Barcode & Retur Supplier</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SheetJS, ExcelJS & HTML5 QR/Barcode Scanner -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<div class="app">
-
-    <header class="topbar">
-        <div>
-            <h2>Barcode Scanner</h2>
-            <small>Cek data produk</small>
-        </div>
-
-        <button id="cameraBtn" class="camera-btn">
-            ⚙️
-        </button>
-    </header>
-
-    <div class="search-box">
-        <input
-            id="barcodeInput"
-            type="text"
-            placeholder="Masukkan barcode..."
-        >
-        <button id="fetchData" type="button" class="search-btn">
-            <span class="search-icon">🔍</span>
-            <span>Cari</span>
-        </button>
-    </div>
-
-    <div class="card">
-
-        <h3>Informasi Produk</h3>
-
-        <div class="image-wrap">
-            <img id="productImage" class="product-image" src="" alt="Gambar Produk" style="display:none" />
-        </div>
-
-        <div class="item">
-            <span>Barcode</span>
-            <strong id="txtBarcode">-</strong>
-        </div>
-
-        <div class="item">
-            <span>Nama Produk</span>
-            <strong id="txtNama">-</strong>
-        </div>
-
-        <div class="item">
-            <span>Supplier</span>
-            <strong id="txtSupplier">-</strong>
-        </div>
-
-        <div class="item">
-            <span>Kategori</span>
-            <strong id="txtKategori">-</strong>
-        </div>
-
-        <div class="item">
-            <span>Harga</span>
-            <strong id="txtHarga">-</strong>
-        </div>
-
-    </div>
-
-</div>
-
-<nav class="bottom-nav">
-    <button id="navCamera" class="nav-item">
-        <span>📷</span>
-        <strong>Kamera</strong>
-    </button>
-    <button id="navHome" class="nav-item active">
-        <span>🏠</span>
-        <strong>Beranda</strong>
-    </button>
-    <button id="navAdd" class="nav-item">
-        <span>➕</span>
-        <strong>Tambah</strong>
-    </button>
-</nav>
-
-<div id="addProductModal" class="modal">
-    <div class="popup-card">
-        <button id="closeAddModal" class="close">✕</button>
-        <h2>Tambah Produk Baru</h2>
-        <form id="addProductForm">
-            <label for="newBarcode">Barcode</label>
-            <input id="newBarcode" type="text" placeholder="Masukkan barcode" required />
-            <label for="newName">Nama Produk</label>
-            <input id="newName" type="text" placeholder="Masukkan nama produk" required />
-            <label for="newSupplier">Supplier</label>
-            <input id="newSupplier" type="text" placeholder="Masukkan nama supplier" required />
-            <label for="newStock">Qty Stok</label>
-            <input id="newStock" type="number" min="0" placeholder="Masukkan qty stok" required />
-            <label for="newImage">URL Gambar (opsional)</label>
-            <input id="newImage" type="text" placeholder="Masukkan URL gambar produk (opsional)" />
-            <button type="submit" class="submit-btn">Simpan Produk</button>
-        </form>
-    </div>
-</div>
-
-<!-- Modal Scanner -->
-
-<div id="scannerModal" class="modal">
-
-    <div class="scanner-box">
-
-        <button id="closeScanner" class="close">
-            ✕
-        </button>
-
-        <video id="video" autoplay playsinline></video>
-
-        <div class="scanner-line"></div>
-
-        <p id="scanStatus">Arahkan barcode ke dalam kotak</p>
-
-    </div>
-
-</div>
-
-
-<!-- Popup Hasil -->
-
-<div id="resultModal" class="modal">
-
-    <div class="popup">
-
-        <div class="success">
-
-            ✔
-
-        </div>
-
-        <h2>Barcode Ditemukan</h2>
-
-        <div id="singleResult">
-            <h3 id="popupBarcode"></h3>
-
-            <p id="popupNama"></p>
-
-            <small id="popupSupplier"></small><br>
-
-            <small>Kategori: <strong id="popupKategori">-</strong></small><br>
-            <small>Harga: <strong id="popupHarga">-</strong></small>
-
-            <div class="popup-image-wrap">
-                <img id="popupImage" class="popup-image" src="" alt="Gambar Produk" style="display:none" />
+    <div class="app-container">
+        <!-- Top App Bar -->
+        <header class="app-header">
+            <div class="brand">
+                <span class="dragon-badge">🐉</span>
+                <div>
+                    <h1 class="brand-title">GACOR <span class="gold-highlight">KING</span></h1>
+                    <span class="brand-subtitle">Receiving & Retur Supplier System</span>
+                </div>
             </div>
+            <div class="header-actions" style="display:flex; align-items:center;">
+                <span id="syncStatusBadge" style="font-size:11px; font-weight:700; padding:4px 8px; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.3); color:#fbbf24; border-radius:12px; margin-right:8px;">Syncing...</span>
+                <button class="btn btn-icon" id="btnRefresh" title="Refresh Sync GitHub"><i class="fa-solid fa-rotate-right"></i></button>
+            </div>
+        </header>
 
-            <button id="closePopup" type="button" class="ok-btn">
-                OK
+        <!-- Navigation Tabs -->
+        <nav class="app-nav">
+            <button class="nav-tab active" data-tab="tab-retur">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <span>Form Retur</span>
             </button>
-        </div>
+            <button class="nav-tab" data-tab="tab-list">
+                <i class="fa-solid fa-boxes-packing"></i>
+                <span>Laporan (<span id="returBadgeCount">0</span>)</span>
+            </button>
+            <button class="nav-tab" data-tab="tab-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Cari Produk</span>
+            </button>
+            <button class="nav-tab" data-tab="tab-master">
+                <i class="fa-solid fa-database"></i>
+                <span>Master Barang</span>
+            </button>
+        </nav>
 
-        <div id="multiResults" style="display:none">
-            <p>Pilih salah satu produk yang sesuai:</p>
-            <div id="multiList"></div>
-        </div>
+        <!-- Main Content Area -->
+        <main class="app-content">
+            <!-- TAB 1: FORM RETUR -->
+            <section id="tab-retur" class="tab-pane active">
+                <div class="card">
+                    <div class="card-header border-gold">
+                        <h2><i class="fa-solid fa-plus-circle text-gold"></i> Tambah Barang Retur</h2>
+                        <span class="badge badge-gold">Receiving Goods</span>
+                    </div>
 
+                    <form id="formRetur" class="form-grid">
+                        <!-- Supplier Field -->
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-truck"></i> NAMA SUPPLIER *</label>
+                            <input type="text" id="returSupplier" placeholder="Ketik nama supplier..." list="supplierList" autocomplete="off" required>
+                            <datalist id="supplierList"></datalist>
+                            <div id="supplierChips" class="chip-container"></div>
+                        </div>
+
+                        <!-- Barcode Field with Camera Scan & 3-Dots Modal Button -->
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-barcode"></i> BARCODE BARANG *</label>
+                            <div class="input-action-group">
+                                <input type="text" id="returBarcode" placeholder="Scan barcode atau ketik manual..." required>
+                                <button type="button" class="btn btn-gold-icon" id="btnOpenSupplierProducts" title="Lihat Daftar Produk Supplier Ini">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                <button type="button" class="btn btn-gold" id="btnStartScan" title="Buka Kamera Barcode">
+                                    <i class="fa-solid fa-camera"></i> Scan
+                                </button>
+                            </div>
+                            <small class="help-text">Gunakan tombol <b>⋮</b> untuk memilih produk terdaftar milik supplier.</small>
+                        </div>
+
+                        <!-- Scanner Container (Hidden by default) -->
+                        <div id="scannerModal" class="scanner-wrapper hidden">
+                            <div class="scanner-header">
+                                <span><i class="fa-solid fa-qrcode"></i> Arahkan Barcode ke Kamera</span>
+                                <button type="button" class="btn-close" id="btnCloseScanner">&times;</button>
+                            </div>
+                            <div id="reader"></div>
+                        </div>
+
+                        <!-- Nama Barang Field -->
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-box"></i> NAMA BARANG *</label>
+                            <input type="text" id="returNama" placeholder="Nama barang otomatis atau ketik manual..." required>
+                        </div>
+
+                        <!-- Qty & Keterangan Row -->
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-hashtag"></i> QTY RETUR *</label>
+                                <div class="qty-control">
+                                    <button type="button" class="btn-qty" id="btnQtyMinus">-</button>
+                                    <input type="number" id="returQty" value="1" min="1" required>
+                                    <button type="button" class="btn-qty" id="btnQtyPlus">+</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-circle-exclamation"></i> ALASAN RETUR *</label>
+                                <select id="returAlasan" required>
+                                    <option value="rusak">Rusak</option>
+                                    <option value="rusak kemasan">Rusak Kemasan</option>
+                                    <option value="mendekati ED">Mendekati Expired Date (ED)</option>
+                                    <option value="cacat pabrik">Cacat Pabrik</option>
+                                    <option value="tidak sesuai order">Tidak Sesuai Order</option>
+                                    <option value="segel terbuka">Segel Terbuka</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Keterangan Tambahan -->
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-comment-dots"></i> KETERANGAN TAMBAHAN</label>
+                            <input type="text" id="returKeterangan" placeholder="Contoh: Dus penyok dari expedisi, exp bulan depan...">
+                        </div>
+
+                        <!-- Upload Foto Bukti -->
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-image"></i> FOTO BUKTI BARANG (OPSIONAL)</label>
+                            <input type="file" id="returFoto" accept="image/*" class="file-input">
+                            <div id="fotoPreviewContainer" class="image-preview-box hidden">
+                                <img id="fotoPreview" src="" alt="Preview Bukti">
+                                <button type="button" class="btn-remove-img" id="btnRemoveFoto">&times;</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger btn-lg w-100">
+                            <i class="fa-solid fa-plus"></i> Tambah ke Laporan Retur
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 2: DAFTAR LAPORAN RETUR -->
+            <section id="tab-list" class="tab-pane">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-clipboard-check text-red"></i> Laporan Retur Tertunda</h2>
+                        <div class="header-actions">
+                            <button class="btn btn-excel" id="btnExportExcel">
+                                <i class="fa-solid fa-file-excel"></i> Export Excel (.xlsx)
+                            </button>
+                            <button class="btn btn-outline-danger" id="btnClearAllRetur">
+                                <i class="fa-solid fa-trash"></i> Hapus Semua
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="returListContainer" class="retur-items-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: CARI & SCAN PRODUK -->
+            <section id="tab-search" class="tab-pane">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-magnifying-glass text-gold"></i> Pencarian Produk Master</h2>
+                    </div>
+
+                    <div class="search-box-container">
+                        <div class="input-action-group">
+                            <input type="text" id="searchMasterQuery" placeholder="Cari barcode full, nama, atau 6 digit akhir...">
+                            <button class="btn btn-gold" id="btnScanSearch"><i class="fa-solid fa-camera"></i> Scan</button>
+                        </div>
+                    </div>
+
+                    <div id="searchResultsList" class="product-cards-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: MASTER BARANG -->
+            <section id="tab-master" class="tab-pane">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-database text-gold"></i> Kelola Master Barang</h2>
+                        <button class="btn btn-gold btn-sm" id="btnOpenAddMasterModal">
+                            <i class="fa-solid fa-plus"></i> Tambah Produk
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Barcode</th>
+                                    <th>Nama Produk</th>
+                                    <th>Kategori</th>
+                                    <th>Supplier</th>
+                                    <th>Harga</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="masterTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
-</div>
-
-<!-- Settings Modal -->
-<div id="settingsModal" class="modal">
-    <div class="popup-card">
-        <button id="closeSettings" class="close">✕</button>
-        <h2>Pengaturan</h2>
-
-        <div>
-            <strong>Versi:</strong> <span id="appVersion">1.0.0</span>
-        </div>
-
-        <hr />
-
-        <h3>Tampilan</h3>
-        <label class="theme-switch">
-            <span>Mode Gelap</span>
-            <input id="themeToggle" type="checkbox" />
-            <span class="slider"></span>
-        </label>
-
-        <hr />
-
-        <h3>Jabatan</h3><p style="color: #cbcbcb;">Admin Returan</p>
-
-        <h3 style="margin-top:12px">Divisi </h3><p style="color: #cbcbcb;">Receiving Good</p>
-
-
-        <div style="margin-top:12px">
-            <button id="saveSettingsBtn" class="submit-btn">Simpan</button>
+    <!-- MODAL 1: Supplier Products Picker (3-Dots Modal) -->
+    <div id="modalSupplierProducts" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalSupplierTitle">Daftar Produk Supplier</h3>
+                <button class="btn-close" id="btnCloseSupplierModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted text-sm mb-3">Pilih produk di bawah ini untuk mengisi otomatis Barcode & Nama Barang:</p>
+                <div id="supplierProductsList" class="modal-product-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<style>
-/* Dark theme */
-.dark { color-scheme: dark; background: radial-gradient(circle at top left, #071023 0%, #04101a 35%, #000814 100%); color: #e6eef8; }
-.dark .card, .dark .popup-card, .dark .popup { background: #071023; color: #e6eef8; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-.dark .product-image, .dark .popup-image { background: #081426; }
-.dark .search-box input, .dark .popup-card input, .dark .mode-select { background: #081426; color: #e6eef8; border: 1px solid #223040; }
-.dark .bottom-nav { background: rgba(2,6,23,0.9); color: #e6eef8; }
-.dark .nav-item, .dark .submit-btn { color: #e6eef8; }
-.dark .modal { background: rgba(0,0,0,0.8); }
-.close { background: #fff; }
-.dark .close { background: #22313b; color: #e6eef8; }
-</style>
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
-<script src="app.js"></script>
+    <!-- MODAL 2: Tambah Master Product Modal -->
+    <div id="modalAddMaster" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tambah Produk ke Master</h3>
+                <button class="btn-close" id="btnCloseMasterModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formAddMaster">
+                    <div class="form-group">
+                        <label>Barcode *</label>
+                        <input type="text" id="newBarcode" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Produk *</label>
+                        <input type="text" id="newNama" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <input type="text" id="newKategori" placeholder="Sembako, Minuman, Sabun...">
+                    </div>
+                    <div class="form-group">
+                        <label>Supplier *</label>
+                        <input type="text" id="newSupplier" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Harga (Rp)</label>
+                        <input type="number" id="newHarga" value="0">
+                    </div>
+                    <button type="submit" class="btn btn-gold w-100 mt-3">Simpan Produk</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
+    <script src="app.js"></script>
 </body>
 </html>
