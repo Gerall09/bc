@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -28,8 +28,11 @@
                     <span class="brand-subtitle">Receiving & Retur Supplier System</span>
                 </div>
             </div>
-            <div class="header-actions" style="display:flex; align-items:center;">
-                <span id="syncStatusBadge" style="font-size:11px; font-weight:700; padding:4px 8px; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.3); color:#fbbf24; border-radius:12px; margin-right:8px;">Syncing...</span>
+            <div class="header-actions" style="display:flex; align-items:center; gap:8px;">
+                <span id="syncStatusBadge" style="font-size:11px; font-weight:700; padding:4px 8px; background:rgba(251,191,36,0.15); border:1px solid rgba(251,191,36,0.3); color:#fbbf24; border-radius:12px;">Syncing...</span>
+                <button class="btn btn-icon" id="btnToggleTheme" title="Ganti Mode Gelap/Terang">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
                 <button class="btn btn-icon" id="btnRefresh" title="Refresh Sync GitHub"><i class="fa-solid fa-rotate-right"></i></button>
             </div>
         </header>
@@ -135,7 +138,10 @@
                         <!-- Upload Foto Bukti -->
                         <div class="form-group">
                             <label><i class="fa-solid fa-image"></i> FOTO BUKTI BARANG (OPSIONAL)</label>
-                            <input type="file" id="returFoto" accept="image/*" class="file-input">
+                            <div style="display:flex; gap:8px; align-items:center;">
+                                <input type="file" id="returFoto" accept="image/*" class="file-input">
+                                <button type="button" class="btn btn-gold btn-sm" id="btnOpenCameraPhoto"><i class="fa-solid fa-camera"></i> Ambil Foto</button>
+                            </div>
                             <div id="fotoPreviewContainer" class="image-preview-box hidden">
                                 <img id="fotoPreview" src="" alt="Preview Bukti">
                                 <button type="button" class="btn-remove-img" id="btnRemoveFoto">&times;</button>
@@ -157,6 +163,12 @@
                         <div class="header-actions">
                             <button class="btn btn-excel" id="btnExportExcel">
                                 <i class="fa-solid fa-file-excel"></i> Export Excel (.xlsx)
+                            </button>
+                            <button class="btn btn-excel" id="btnExportPDF" title="Export PDF">
+                                <i class="fa-solid fa-file-pdf"></i> Export PDF
+                            </button>
+                            <button class="btn btn-excel" id="btnExportWord" title="Export Word">
+                                <i class="fa-solid fa-file-word"></i> Export Word
                             </button>
                             <button class="btn btn-outline-danger" id="btnClearAllRetur">
                                 <i class="fa-solid fa-trash"></i> Hapus Semua
@@ -271,6 +283,85 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <!-- MODAL 3: PHOTO CAPTURE -->
+    <div id="modalPhotoCapture" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ambil Foto Bukti</h3>
+                <button class="btn-close" id="btnClosePhotoModal">&times;</button>
+            </div>
+            <div class="modal-body" style="display:flex; flex-direction:column; gap:8px; align-items:center;">
+                <video id="photoVideo" autoplay playsinline style="width:100%; border-radius:8px; background:#000"></video>
+                <canvas id="photoCanvas" class="hidden"></canvas>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn btn-gold" id="btnCapturePhoto"><i class="fa-solid fa-camera"></i> Capture</button>
+                    <button type="button" class="btn btn-outline-danger" id="btnCancelPhoto">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: DETAIL PRODUK (POP-UP) -->
+    <div id="modalProductDetail" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-circle-info text-gold"></i> Detail Produk</h3>
+                <button class="btn-close" id="btnCloseProductDetailModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-product-container">
+                    <img id="detailProductImg" src="" class="detail-product-img" alt="Foto Produk">
+                    
+                    <div class="detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-box"></i> Nama Produk</span>
+                        <div class="copy-field-group">
+                            <input type="text" id="detailProductNama" readonly>
+                            <button type="button" class="btn btn-gold-icon btn-sm" id="btnCopyNama" title="Salin Nama">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-barcode"></i> Barcode</span>
+                        <div class="copy-field-group">
+                            <input type="text" id="detailProductBarcode" readonly>
+                            <button type="button" class="btn btn-gold-icon btn-sm" id="btnCopyBarcode" title="Salin Barcode">
+                                <i class="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Kategori</span>
+                            <strong id="detailProductKategori">-</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Supplier</span>
+                            <strong id="detailProductSupplier">-</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Harga</span>
+                            <strong id="detailProductHarga" class="text-gold">Rp 0</strong>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:20px; display:flex; gap:10px;">
+                        <button type="button" class="btn btn-gold w-100" id="btnDetailQuickRetur">
+                            <i class="fa-solid fa-plus-circle"></i> Retur Produk Ini
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastNotification" class="toast hidden">
+        <i class="fa-solid fa-circle-check"></i> <span id="toastMessage">Teks tersalin!</span>
     </div>
 
     <script src="app.js"></script>
